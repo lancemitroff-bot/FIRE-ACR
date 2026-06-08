@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0c10">
+<title>Fire ACR</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0c10;--s1:#11141b;--s2:#181c26;--bd:#1f2335;
+  --red:#d63031;--rdim:rgba(214,48,49,.13);
+  --tx:#dde1f0;--mt:#4a5068;--wt:#ffffff;
+  --hd:'Oswald',sans-serif;--bd2:'Inter',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:var(--bd2);font-size:15px}
+#app{max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:76px}
+
+header{background:var(--s1);border-bottom:1.5px solid var(--red);padding:13px 18px;
+  position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:10px}
+.h-icon{font-size:22px}.h-title{font-family:var(--hd);font-size:18px;letter-spacing:1.5px;color:var(--wt)}
+.h-sub{font-size:9px;color:var(--red);letter-spacing:3px;text-transform:uppercase}
+
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;background:var(--s1);border-top:1.5px solid var(--bd);display:flex;z-index:100}
+.nb{flex:1;background:none;border:none;color:var(--mt);font-family:var(--bd2);
+  font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:10px 4px;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:color .2s}
+.nb.on{color:var(--red)}.nb-i{font-size:19px}
+
+.pg{padding:16px 14px;animation:fi .18s ease}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+.card{background:var(--s1);border-radius:12px;padding:15px;margin-bottom:10px;border:1px solid var(--bd)}
+.ct{font-family:var(--hd);font-size:10px;color:var(--red);letter-spacing:3px;text-transform:uppercase;margin-bottom:11px}
+
+.lbl{display:block;font-size:11px;color:var(--mt);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px;font-weight:600}
+input,select,textarea{width:100%;background:var(--s2);border:1.5px solid var(--bd);
+  border-radius:8px;padding:11px 13px;color:var(--tx);font-family:var(--bd2);font-size:15px;
+  outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--red)}
+textarea{min-height:80px;resize:vertical;font-size:14px;line-height:1.5}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%234a5068' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 13px center;padding-right:32px}
+select option{background:#11141b;color:#dde1f0}
+.row2{display:flex;gap:10px}.row2>div{flex:1}.gap{margin-top:11px}
+
+.btn{width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:8px;
+  font-family:var(--hd);font-size:16px;letter-spacing:1px;cursor:pointer;
+  transition:opacity .2s;display:block;text-align:center;margin-top:8px}
+.btn:active{opacity:.8}.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-back{background:none;border:none;color:var(--red);font-family:var(--bd2);
+  font-size:13px;cursor:pointer;padding:0 0 14px;display:flex;align-items:center;gap:4px}
+.btn-sm{padding:8px 14px;border-radius:8px;border:1.5px solid var(--bd);background:var(--s2);
+  color:var(--mt);font-family:var(--bd2);font-size:13px;cursor:pointer;transition:all .15s}
+.btn-sm.on{border-color:var(--red);background:var(--rdim);color:var(--wt)}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip,.pchip{border:1.5px solid var(--bd);background:var(--s2);color:var(--mt);
+  font-family:var(--bd2);font-size:14px;cursor:pointer;transition:all .15s;
+  display:inline-flex;align-items:center;min-height:44px;white-space:nowrap}
+.chip{padding:8px 15px;border-radius:22px}.pchip{padding:8px 13px;border-radius:8px}
+.chip.on,.pchip.on{border-color:var(--red);background:var(--rdim);color:var(--wt);font-weight:600}
+
+.badge{display:inline-block;background:var(--rdim);color:var(--red);
+  border:1px solid rgba(214,48,49,.25);border-radius:5px;
+  padding:2px 8px;font-size:11px;font-family:var(--hd);letter-spacing:.5px;white-space:nowrap}
+
+.cc{background:var(--s1);border-radius:12px;padding:13px 15px;margin-bottom:8px;
+  border:1px solid var(--bd);border-left:3px solid var(--red);cursor:pointer;transition:background .15s}
+.cc:active{background:var(--s2)}
+
+.stats{display:flex;justify-content:space-around;padding:4px 0}
+.stat{text-align:center}
+.sn{font-family:var(--hd);font-size:30px;color:var(--red);line-height:1}
+.sl{font-size:10px;color:var(--mt);letter-spacing:.5px;text-transform:uppercase;margin-top:2px}
+.sdiv{width:1px;background:var(--bd)}
+
+.ub{background:var(--s2);border-radius:8px;padding:13px;margin-bottom:10px;border:1px solid var(--bd)}
+.uh{font-family:var(--hd);font-size:14px;color:var(--wt);letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+
+.sr{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid var(--bd);min-height:48px;gap:8px}
+.sr:last-child{border-bottom:none}
+.sname{font-size:15px;color:var(--tx);flex:1;cursor:pointer}
+.sdel{background:none;border:none;color:var(--red);font-size:22px;cursor:pointer;
+  padding:4px 6px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
+.ar{display:flex;gap:8px;margin-top:11px}
+.ai{flex:1;background:var(--s2);border:1.5px solid var(--bd);border-radius:8px;
+  padding:11px 13px;color:var(--tx);font-family:var(--bd2);font-size:15px;outline:none;min-height:46px}
+.ab{background:var(--red);color:#fff;border:none;border-radius:8px;padding:10px 16px;
+  cursor:pointer;font-size:22px;min-width:48px;min-height:46px;
+  display:flex;align-items:center;justify-content:center}
+.ie{flex:1;background:var(--s2);border:1.5px solid var(--red);border-radius:8px;
+  padding:9px 12px;color:var(--tx);font-family:var(--bd2);font-size:15px;outline:none;min-height:46px}
+
+#toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%) translateY(8px);
+  color:#fff;padding:10px 22px;border-radius:22px;font-family:var(--hd);
+  font-size:13px;letter-spacing:1px;z-index:999;opacity:0;
+  transition:all .25s;pointer-events:none;white-space:nowrap;background:#27ae60}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.err{background:var(--red)}
+
+.saving-dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--red);margin-left:6px;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.empty{text-align:center;color:#252a3a;margin-top:48px;font-size:14px;line-height:2.2}
+.loading{text-align:center;color:var(--mt);margin-top:40px;font-size:13px}
+.hidden{display:none!important}
+.sec-hdr{display:flex;justify-content:space-between;align-items:center;margin:18px 0 10px}
+.sec-lbl{font-family:var(--hd);font-size:11px;color:var(--red);letter-spacing:3px;text-transform:uppercase}
+.ref-btn{background:none;border:none;color:var(--red);font-family:var(--hd);
+  font-size:11px;letter-spacing:1px;cursor:pointer;padding:4px 0}
+.sync-note{font-size:11px;color:var(--mt);margin-top:8px}
+.err-box{background:var(--rdim);border:1px solid rgba(214,48,49,.3);border-radius:8px;
+  padding:14px;font-size:13px;color:#e07070;line-height:1.7;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="h-icon">🔥</div>
+    <div><div class="h-title">FIRE DEPT ACR</div><div class="h-sub">After-Call Reporting</div></div>
+  </header>
+  <div id="pg-home"     class="pg"></div>
+  <div id="pg-new"      class="pg hidden"></div>
+  <div id="pg-detail"   class="pg hidden"></div>
+  <div id="pg-settings" class="pg hidden"></div>
+  <nav>
+    <button id="nb-home"     class="nb on"  onclick="go('home')">    <span class="nb-i">🏠</span>Home</button>
+    <button id="nb-new"      class="nb"     onclick="go('new')">     <span class="nb-i">📋</span>New Call</button>
+    <button id="nb-settings" class="nb"     onclick="go('settings')"><span class="nb-i">⚙️</span>Settings</button>
+  </nav>
+  <div id="toast"></div>
+</div>
+<script>
+const SCRIPT = "https://script.google.com/macros/s/AKfycbzh7sY8wnTmV25JI37FKZZ1UDHGSJOdm5xMxDn_BKC0CyoQzFxjjIhA_ibrNvK265B2/exec";
+const TYPES  = ["Structure Fire","Vehicle Fire","Grass/Brush Fire","Vehicle Accident",
+                 "Medical Assist","Hazmat","Public Assist","False Alarm","Mutual Aid","Other"];
+
+// ── STATE ─────────────────────────────────────────────────────
+function ls(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}}
+function ps(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+
+let roster   = ls('roster',[]);
+let units    = ls('units',[]);
+let myName   = ls('name','');
+let log      = [];
+let logState = 'idle';
+let selected = null;
+let saving   = false;
+let saveTimer= null;
+let F        = blank();
+
+function blank(){
+  const n=new Date();
+  return{date:n.toISOString().split('T')[0],time:n.toTimeString().slice(0,5),
+         type:'',address:'',narrative:'',units:[],assignments:{}};
+}
+
+// ── ROUTER ────────────────────────────────────────────────────
+function go(s){
+  ['home','new','detail','settings'].forEach(p=>{
+    document.getElementById('pg-'+p).classList.toggle('hidden',p!==s);
+    const b=document.getElementById('nb-'+p);
+    if(b)b.classList.toggle('on',p===s);
+  });
+  if(s==='home')     drawHome();
+  if(s==='new')      drawNew();
+  if(s==='detail')   drawDetail();
+  if(s==='settings') drawSettings();
+}
+
+function g(id){return document.getElementById(id)}
+function esc(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+
+function pop(msg,err=false){
+  const t=g('toast');t.textContent=msg;
+  t.className='on'+(err?' err':'');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.className='',3500);
+}
+
+function fmtD(v){
+  if(!v)return'';
+  let d;
+  if(String(v).match(/^\d{4}-\d{2}-\d{2}$/))d=new Date(v+'T12:00:00');
+  else d=new Date(v);
+  if(isNaN(d))return String(v);
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+function fmtT(t){
+  if(!t)return'';
+  const m=String(t).match(/(\d+):(\d+)/);
+  if(!m)return String(t);
+  const h=parseInt(m[1]);
+  return`${h%12||12}:${m[2]} ${h>=12?'PM':'AM'}`;
+}
+
+// ── FETCH ─────────────────────────────────────────────────────
+async function fetchAll(){
+  logState='loading'; drawHome();
+  try{
+    const res=await fetch(SCRIPT+'?t='+Date.now(),{method:'GET',mode:'cors'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const json=await res.json();
+    if(json.error)throw new Error(json.error);
+    log=json.rows||[];
+    if(json.roster&&json.roster.length>0){roster=json.roster;ps('roster',roster);}
+    if(json.units&&json.units.length>0){units=json.units;ps('units',units);}
+    logState='done';
+  }catch(e){
+    logState='error';
+    console.error('fetchAll:',e);
+  }
+  drawHome();
+}
+
+// ── SAVE CONFIG ───────────────────────────────────────────────
+function schedSave(){
+  ps('roster',roster); ps('units',units);
+  clearTimeout(saveTimer);
+  saving=true; updSaveInd();
+  saveTimer=setTimeout(pushConfig,1500);
+}
+
+async function pushConfig(){
+  try{
+    await fetch(SCRIPT,{method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'saveConfig',roster,units})});
+  }catch(e){console.error('pushConfig:',e);}
+  saving=false; updSaveInd();
+}
+
+function updSaveInd(){
+  const el=g('save-ind');
+  if(!el)return;
+  el.innerHTML=saving
+    ?`<span class="saving-dot"></span> Syncing to everyone…`
+    :`✓ Saved — everyone sees this`;
+}
+
+// ── HOME ──────────────────────────────────────────────────────
+function drawHome(){
+  const now=new Date();
+  const mo=log.filter(c=>{
+    const d=new Date((c.date||'')+'T12:00:00');
+    return!isNaN(d)&&d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  }).length;
+
+  let logHTML='';
+  if(logState==='loading'){
+    logHTML=`<div class="loading">Loading calls…</div>`;
+  }else if(logState==='error'){
+    logHTML=`<div class="err-box">
+      <strong style="font-family:var(--hd);letter-spacing:1px;display:block;margin-bottom:4px">⚠️ COULDN'T LOAD LOG</strong>
+      Make sure the Apps Script is updated and re-deployed, then tap Refresh.
+    </div>`;
+  }else if(log.length===0){
+    logHTML=`<div class="empty">No calls logged yet.<br>Tap New Call to get started.</div>`;
+  }else{
+    logHTML=log.slice(0,40).map((c,i)=>`
+      <div class="cc" onclick="viewCall(${i})">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+          <div style="font-family:var(--hd);font-size:16px;color:var(--wt);letter-spacing:.5px">${c.type||'Unknown'}</div>
+          <span class="badge">${c.units||'—'}</span>
+        </div>
+        <div style="font-size:13px;color:var(--tx);margin-top:3px">${c.address||'—'}</div>
+        <div style="font-size:11px;color:var(--mt);margin-top:3px">
+          ${fmtD(c.date)} · ${fmtT(c.time)} · ${c.personnel||0} personnel · ${c.submittedBy||'Unknown'}
+        </div>
+      </div>`).join('');
+  }
+
+  g('pg-home').innerHTML=`
+    <div style="font-family:var(--hd);font-size:22px;color:var(--wt);letter-spacing:1px;margin-bottom:4px">Incident Log</div>
+    <div style="font-size:12px;color:var(--mt);margin-bottom:14px">Everyone sees the same calls</div>
+    <div class="card">
+      <div class="stats">
+        <div class="stat"><div class="sn">${log.length}</div><div class="sl">Total</div></div>
+        <div class="sdiv"></div>
+        <div class="stat"><div class="sn">${mo}</div><div class="sl">This Month</div></div>
+        <div class="sdiv"></div>
+        <div class="stat"><div class="sn">${roster.length}</div><div class="sl">Roster</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <label class="lbl">Your Name</label>
+      <input type="text" value="${myName}" placeholder="Enter your name…"
+        oninput="myName=this.value;ps('name',this.value)">
+    </div>
+    <button class="btn" onclick="go('new')">+ Log New Call</button>
+    <div class="sec-hdr">
+      <div class="sec-lbl">Recent Calls</div>
+      <button class="ref-btn" onclick="fetchAll()">↻ Refresh</button>
+    </div>
+    ${logHTML}
+  `;
+}
+
+function viewCall(i){selected=log[i];go('detail');}
+
+// ── NEW CALL ──────────────────────────────────────────────────
+function drawNew(){
+  const uChips=units.length===0
+    ?`<p style="color:var(--mt);font-size:13px">No units yet — add them in ⚙️ Settings.</p>`
+    :units.map(u=>`<button type="button" class="chip${F.units.includes(u)?' on':''}"
+        onclick="togUnit('${esc(u)}')">${u}</button>`).join('');
+
+  const pSec=F.units.length===0?'':
+    `<div class="card"><div class="ct">Personnel by Unit</div>
+      ${F.units.map(u=>`
+        <div class="ub">
+          <div class="uh">🚒 ${u}<span class="badge">${(F.assignments[u]||[]).length}</span></div>
+          <div class="chips">
+            ${roster.length===0
+              ?`<p style="color:var(--mt);font-size:13px">No members yet — add in ⚙️ Settings.</p>`
+              :roster.map(p=>`<button type="button" class="pchip${(F.assignments[u]||[]).includes(p)?' on':''}"
+                  onclick="togP('${esc(u)}','${esc(p)}')">${p}</button>`).join('')}
+          </div>
+        </div>`).join('')}
+      <div style="font-size:12px;color:var(--mt);margin-top:4px">
+        Unique personnel: ${new Set(Object.values(F.assignments).flat()).size}
+      </div>
+    </div>`;
+
+  g('pg-new').innerHTML=`
+    <button class="btn-back" onclick="go('home')">← Back</button>
+    <div style="font-family:var(--hd);font-size:20px;color:var(--wt);letter-spacing:1px;margin-bottom:16px">New After-Call Report</div>
+    <div class="card">
+      <div class="ct">Incident Info</div>
+      <div class="row2">
+        <div><label class="lbl">Date</label><input type="date" id="fd" value="${F.date}" onchange="F.date=this.value"></div>
+        <div><label class="lbl">Time</label><input type="time" id="ft" value="${F.time}" onchange="F.time=this.value"></div>
+      </div>
+      <div class="gap">
+        <label class="lbl">Incident Type</label>
+        <select id="ftype">
+          <option value="">Select type…</option>
+          ${TYPES.map(t=>`<option value="${t}"${F.type===t?' selected':''}>${t}</option>`).join('')}
+        </select>
+      </div>
+      <div class="gap">
+        <label class="lbl">Address / Location</label>
+        <input type="text" id="faddr" value="${F.address}" placeholder="123 Main St or cross streets">
+      </div>
+      <div class="gap">
+        <label class="lbl">What Happened</label>
+        <textarea id="fnarr" placeholder="Brief description of the incident…">${F.narrative}</textarea>
+      </div>
+      <div class="gap">
+        <label class="lbl">Submitted By</label>
+        <input type="text" id="fname" value="${myName}" placeholder="Your name">
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Units Deployed</div>
+      <div class="chips">${uChips}</div>
+    </div>
+    ${pSec}
+    <button type="button" class="btn" id="subbtn" onclick="submitCall()">Submit Report</button>
+  `;
+}
+
+function togUnit(u){
+  const i=F.units.indexOf(u);
+  if(i>-1){F.units.splice(i,1);delete F.assignments[u];}
+  else{F.units.push(u);if(!F.assignments[u])F.assignments[u]=[];}
+  drawNew();
+}
+function togP(u,p){
+  if(!F.assignments[u])F.assignments[u]=[];
+  const i=F.assignments[u].indexOf(p);
+  if(i>-1)F.assignments[u].splice(i,1); else F.assignments[u].push(p);
+  drawNew();
+}
+
+async function submitCall(){
+  // Read from DOM at submit time — prevents stale state bugs
+  F.type      = g('ftype').value;
+  F.address   = (g('faddr').value||'').trim();
+  F.narrative = (g('fnarr').value||'').trim();
+  F.date      = g('fd').value;
+  F.time      = g('ft').value;
+  const nm    = (g('fname').value||'').trim();
+  if(nm){myName=nm;ps('name',nm);}
+
+  if(!F.type)        {pop('Select an incident type.',true);return;}
+  if(!F.address)     {pop('Enter an address.',true);return;}
+  if(!F.units.length){pop('Select at least one unit.',true);return;}
+
+  const btn=g('subbtn');
+  btn.disabled=true;btn.textContent='Submitting…';
+
+  try{
+    await fetch(SCRIPT,{method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({...F,submittedBy:myName||'Unknown'})});
+    pop('✓ Report submitted!');
+    F=blank();
+    setTimeout(()=>{go('home');fetchAll();},1000);
+  }catch(e){
+    pop('Submission failed — check connection.',true);
+    btn.disabled=false;btn.textContent='Submit Report';
+  }
+}
+
+// ── DETAIL ────────────────────────────────────────────────────
+function drawDetail(){
+  const c=selected; if(!c){go('home');return;}
+  const lines=(c.personnelByUnit||'').split('|').map(s=>s.trim()).filter(Boolean);
+  g('pg-detail').innerHTML=`
+    <button class="btn-back" onclick="go('home')">← Back</button>
+    <span class="badge" style="margin-bottom:8px;display:inline-block">${c.type||'Unknown'}</span>
+    <div style="font-family:var(--hd);font-size:22px;color:var(--wt);margin:6px 0 3px;letter-spacing:.5px">${c.address||'—'}</div>
+    <div style="font-size:12px;color:var(--mt);margin-bottom:18px">
+      ${fmtD(c.date)} at ${fmtT(c.time)} · ${c.submittedBy||'Unknown'}
+    </div>
+    <div class="card">
+      <div class="ct">Units on Scene</div>
+      <div class="chips">
+        ${(c.units||'').split(',').map(u=>u.trim()).filter(Boolean)
+          .map(u=>`<div class="chip on" style="cursor:default">${u}</div>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Personnel — ${c.personnel||0} total</div>
+      ${lines.length===0
+        ?`<p style="color:var(--mt);font-size:13px">No personnel recorded.</p>`
+        :lines.map(line=>{
+            const ci=line.indexOf(':');
+            const unit=ci>-1?line.slice(0,ci).trim():line;
+            const ppl=ci>-1?line.slice(ci+1).split(',').map(p=>p.trim()).filter(Boolean):[];
+            return`<div style="margin-bottom:14px">
+              <div style="font-size:11px;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">🚒 ${unit}</div>
+              <div class="chips">${ppl.length===0
+                ?`<span style="color:var(--mt);font-size:13px">No one assigned</span>`
+                :ppl.map(p=>`<div class="pchip on" style="cursor:default">${p}</div>`).join('')}
+              </div></div>`;}).join('')}
+    </div>
+    ${c.narrative?`<div class="card"><div class="ct">Narrative</div>
+      <div style="font-size:14px;color:var(--tx);line-height:1.8">${c.narrative}</div>
+    </div>`:''}
+  `;
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────
+function drawSettings(){
+  g('pg-settings').innerHTML=`
+    <div style="font-family:var(--hd);font-size:20px;color:var(--wt);letter-spacing:1px;margin-bottom:4px">Settings</div>
+    <div style="font-size:12px;color:var(--mt);margin-bottom:16px">Changes sync to everyone's phone automatically</div>
+
+    <div class="card">
+      <div class="ct">Roster — ${roster.length} members</div>
+      <div id="rl">
+        ${roster.length===0
+          ?`<p style="color:var(--mt);font-size:13px;padding:6px 0">No members yet. Add below.</p>`
+          :roster.map((m,i)=>`
+            <div class="sr" id="rr${i}">
+              <div class="sname" onclick="editR(${i})">${m}</div>
+              <button type="button" class="sdel" onclick="delR(${i})">×</button>
+            </div>`).join('')}
+      </div>
+      <div class="ar">
+        <input class="ai" id="nm" type="text" placeholder="Add member name…" onkeydown="if(event.key==='Enter')addR()">
+        <button type="button" class="ab" onclick="addR()">+</button>
+      </div>
+      <div class="sync-note" id="save-ind">✓ Saved — everyone sees this</div>
+    </div>
+
+    <div class="card">
+      <div class="ct">Apparatus / Units</div>
+      <div id="ul">
+        ${units.length===0
+          ?`<p style="color:var(--mt);font-size:13px;padding:6px 0">No units yet. Add below.</p>`
+          :units.map((u,i)=>`
+            <div class="sr">
+              <div class="sname">${u}</div>
+              <button type="button" class="sdel" onclick="delU(${i})">×</button>
+            </div>`).join('')}
+      </div>
+      <div class="ar">
+        <input class="ai" id="nu" type="text" placeholder="Add unit name…" onkeydown="if(event.key==='Enter')addU()">
+        <button type="button" class="ab" onclick="addU()">+</button>
+      </div>
+    </div>
+
+    <p style="font-size:11px;color:#252a3a;text-align:center;margin-top:14px;line-height:2">
+      Tap a name to edit it.<br>
+      Changes sync to all phones within a few seconds.
+    </p>
+  `;
+}
+
+function addR(){const i=g('nm');const v=i.value.trim();if(!v)return;roster.push(v);i.value='';schedSave();drawSettings();}
+function delR(i){roster.splice(i,1);schedSave();drawSettings();}
+function editR(i){
+  const r=g('rr'+i);
+  r.innerHTML=`<input class="ie" value="${esc(roster[i])}"
+    onblur="saveR(${i},this.value)" onkeydown="if(event.key==='Enter')this.blur()" autofocus>
+    <button type="button" class="sdel" onclick="delR(${i})">×</button>`;
+  r.querySelector('input').focus();
+}
+function saveR(i,v){if(v.trim())roster[i]=v.trim();schedSave();drawSettings();}
+
+function addU(){const i=g('nu');const v=i.value.trim();if(!v)return;units.push(v);i.value='';schedSave();drawSettings();}
+function delU(i){units.splice(i,1);schedSave();drawSettings();}
+
+// ── INIT ──────────────────────────────────────────────────────
+go('home');
+fetchAll();
+</script>
+</body>
+</html>
